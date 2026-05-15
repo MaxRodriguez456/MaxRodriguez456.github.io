@@ -172,21 +172,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyclust)</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>My objective is to see if the K-means Clustering Algorithm is capable of grouping Pokemon who are at their final stage separately from Pokemon who are at their first stage. At the same time, seeing where Pokemon who cannot evolve end up. In my model, I used <code>base_experience</code>, <code>hp</code>, <code>attack</code>, <code>defense</code>, <code>special_attack</code>, <code>special_defense</code>, and <code>speed</code>.</p>
 <p>For some context, the number in <code>evo_stage</code> for each Pokemon is formatted as the first number being the current stage of the pokemon, and the second number being how many stages that Pokemon has. For example, Charmander has an <code>evo_stage</code> of 13 because it is at its first stage and has three stages. Charmander’s evolution, Charmeleon, has 23 as their <code>evo_stage</code> because they are at the second stage of the three stages it has. It follows that Charizard has 33 as their ‘evo_stage’. Pokemon that have 2 evolution stages will have either 12 or 22, depending on whether they are on the first stage (12) or second/final stage (22). Pokemon that cannot evolve have 11 as their <code>evo_stage</code>.</p>
 <p>After doing the clustering with 3 clusters as my chosen parameter, <code>Cluster 2</code> was mostly comprised of unevolved Pokemon, and <code>Cluster 3</code> was mostly comprised of Pokemon at their final evolution. There were 109 Pokemon that cannot evolve, 58 of them ended up in <code>Cluster 3</code>, 7 of them in <code>Cluster 2</code>, and the remaining 33 in <code>Cluster 1</code>. Looking at this, I can see that I was mostly successful in separating unevolved Pokemon from fully evolved Pokemon.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  evo_stage     n
+  &lt;fct&gt;     &lt;int&gt;
+1 22           78
+2 23           36
+3 11           33
+4 33           23
+5 12            8</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  evo_stage     n
+  &lt;fct&gt;     &lt;int&gt;
+1 12          130
+2 13           69
+3 23           25
+4 11            7
+5 22            2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 2
+  evo_stage     n
+  &lt;fct&gt;     &lt;int&gt;
+1 22           78
+2 11           69
+3 33           58
+4 23           19
+5 12            6</code></pre>
+</div>
 </section>
 <section id="motivation-and-context" class="level2">
 <h2 class="anchored" data-anchor-id="motivation-and-context">Motivation and Context</h2>
