@@ -176,56 +176,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>My objective is to see if the K-means Clustering Algorithm is capable of grouping Pokemon who are at their final stage separately from Pokemon who are at their first stage. At the same time, seeing where Pokemon who cannot evolve end up. In my model, I used <code>base_experience</code>, <code>hp</code>, <code>attack</code>, <code>defense</code>, <code>special_attack</code>, <code>special_defense</code>, and <code>speed</code>.</p>
 <p>For some context, the number in <code>evo_stage</code> for each Pokemon is formatted as the first number being the current stage of the pokemon, and the second number being how many stages that Pokemon has. For example, Charmander has an <code>evo_stage</code> of 13 because it is at its first stage and has three stages. Charmander’s evolution, Charmeleon, has 23 as their <code>evo_stage</code> because they are at the second stage of the three stages it has. It follows that Charizard has 33 as their ‘evo_stage’. Pokemon that have 2 evolution stages will have either 12 or 22, depending on whether they are on the first stage (12) or second/final stage (22). Pokemon that cannot evolve have 11 as their <code>evo_stage</code>.</p>
-<p>After doing the clustering with 3 clusters as my chosen parameter, <code>Cluster 2</code> was mostly comprised of unevolved Pokemon, and <code>Cluster 3</code> was mostly comprised of Pokemon at their final evolution. There were 109 Pokemon that cannot evolve, 58 of them ended up in <code>Cluster 3</code>, 7 of them in <code>Cluster 2</code>, and the remaining 33 in <code>Cluster 1</code>. Looking at this, I can see that I was mostly successful in separating unevolved Pokemon from fully evolved Pokemon.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  evo_stage     n
-  &lt;fct&gt;     &lt;int&gt;
-1 22           78
-2 23           36
-3 11           33
-4 33           23
-5 12            8</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  evo_stage     n
-  &lt;fct&gt;     &lt;int&gt;
-1 12          130
-2 13           69
-3 23           25
-4 11            7
-5 22            2</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 5 × 2
-  evo_stage     n
-  &lt;fct&gt;     &lt;int&gt;
-1 22           78
-2 11           69
-3 33           58
-4 23           19
-5 12            6</code></pre>
-</div>
+<p>After doing the clustering with 3 clusters as my chosen parameter, <code>Cluster 2</code> was mostly comprised of unevolved Pokemon, and <code>Cluster 3</code> was mostly comprised of Pokemon at their final evolution. There were 109 Pokemon that cannot evolve, 58 of them ended up in <code>Cluster 3</code>, 7 of them in <code>Cluster 2</code>, and the remaining 33 in <code>Cluster 1</code>. Looking at this, I can see that I was mostly successful in separating unevolved Pokemon from fully evolved Pokemon, but not the Pokemon that have no evolution.</p>
 </section>
 <section id="motivation-and-context" class="level2">
 <h2 class="anchored" data-anchor-id="motivation-and-context">Motivation and Context</h2>
 <p>This section describes what you are investigating in your project and why you are investigating it. You should provide enough contextual background and information that someone with a limited background can understand the broad outlines of the topic being investigated.</p>
+<p>In this project, I am investigating the stats a Pokemon has according to their evolution stage. This started with me doing some research behind how base experience, the amount of experience a Pokemon gives upon defeat, was calculated. I learned that base experience is actually determined by 3 factors: 1. If a Pokemon is not evolved 2. If a Pokemon is evolved or can evolve 3. If a Pokemon has no evolution In these 3 cases, case 1 gives the lowest amount and case 3 gives the highest amount of base experience. When thinking about this, it seems obvious that a Pokemon that gives less base experience would of course have lower stats when compared to an evolved Pokemon. In the case of Pokemon that have no evolution, those Pokemon are usually given much higher stats to begin with. With these assumptions, I want to see if the K-means Clustering Algorithm can group Pokemon according to whether they are unevolved, have evolved, or have no evolution.</p>
 </section>
 <section id="packages-used-in-this-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="packages-used-in-this-analysis">Packages Used In This Analysis</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyclust)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyclust)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <table class="caption-top table">
 <thead>
@@ -257,19 +225,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td><a href="https://tidyclust.tidymodels.org/">tidymodels</a></td>
-<td>to use K-means Clustering function (<code>k_means()</code>)</td>
+<td>to use K-means Clustering function <code>k_means()</code></td>
 </tr>
 <tr class="odd">
 <td><a href="https://tidymodels.tidymodels.org/">tidyverse</a></td>
 <td>to use <code>workflow()</code>, <code>recipe()</code> functions</td>
+</tr>
+<tr class="even">
+<td><a href="https://github.com/ggobi/ggally">GGally</a></td>
+<td>to use <code>ggpairs()</code> function</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="data-description" class="level2">
 <h2 class="anchored" data-anchor-id="data-description">Data Description</h2>
-<p>This section should describe the data that you are using, the source of the data (including a link if appropriate), and how the data was originally collected. You should be able to just clean up the Data Description section from Project 2.</p>
-<p>At the end of the section you should import the data, unless it’s already in one of the packages you loaded.</p>
 <p>The data set I am using for this project is <code>pokemon_evo</code>, which contains 802 observations. An observation in this data set is the information of a Pokemon’s name (<code>pokemon</code>), <code>evo_stage</code>, <code>height</code>, <code>weight</code>, <code>base_experience</code> (experience given upon defeat), <code>type_1</code> (primary type), <code>type_2</code> (secondary type), <code>hp</code>, <code>attack</code>, <code>defense</code>, <code>special_attack</code>, <code>special_defense</code>, and <code>speed</code>.</p>
 <p>This data set is a modified version of the data set that was collected by William Amorim in 2025, in which <code>evo_stage</code> was added by me. The original data was collected by a variety of Pokemon wikis and github pages containing various info about all the Pokemon from Generation 1 to Generation 7:</p>
 <ul>
@@ -279,33 +249,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>https://github.com/HybridShivam/Pokemon</li>
 </ul>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pokemon_evo <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"Data/pokemon_evo.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>pokemon_evo <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"Data/pokemon_evo.csv"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
-<section id="data-wrangling-optional-section" class="level2">
-<h2 class="anchored" data-anchor-id="data-wrangling-optional-section">Data Wrangling (Optional Section)</h2>
+<section id="data-wrangling" class="level2">
+<h2 class="anchored" data-anchor-id="data-wrangling">Data Wrangling</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>type_1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>type_1, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"normal"</span>, <span class="st">"fighting"</span>, <span class="st">"bug"</span>, <span class="st">"poison"</span>, <span class="st">"dark"</span>, <span class="st">"grass"</span>, <span class="st">"ghost"</span>, <span class="st">"psychic"</span>, <span class="st">"fairy"</span>, <span class="st">"dragon"</span>, <span class="st">"water"</span>, <span class="st">"ice"</span>, <span class="st">"fire"</span>, <span class="st">"electric"</span>, <span class="st">"rock"</span>, <span class="st">"ground"</span>, <span class="st">"steel"</span>, <span class="st">"flying"</span>))</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>type_2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>type_2, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"normal"</span>, <span class="st">"fighting"</span>, <span class="st">"bug"</span>, <span class="st">"poison"</span>, <span class="st">"dark"</span>, <span class="st">"grass"</span>, <span class="st">"ghost"</span>, <span class="st">"psychic"</span>, <span class="st">"fairy"</span>, <span class="st">"dragon"</span>, <span class="st">"water"</span>, <span class="st">"ice"</span>, <span class="st">"fire"</span>, <span class="st">"electric"</span>, <span class="st">"rock"</span>, <span class="st">"ground"</span>, <span class="st">"steel"</span>, <span class="st">"flying"</span>, <span class="st">"none"</span>))</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>evo_stage <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>evo_stage, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"11"</span>, <span class="st">"12"</span>, <span class="st">"22"</span>, <span class="st">"13"</span>, <span class="st">"23"</span>, <span class="st">"33"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>type_1 <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>type_1, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"normal"</span>, <span class="st">"fighting"</span>, <span class="st">"bug"</span>, <span class="st">"poison"</span>, <span class="st">"dark"</span>, <span class="st">"grass"</span>, <span class="st">"ghost"</span>, <span class="st">"psychic"</span>, <span class="st">"fairy"</span>, <span class="st">"dragon"</span>, <span class="st">"water"</span>, <span class="st">"ice"</span>, <span class="st">"fire"</span>, <span class="st">"electric"</span>, <span class="st">"rock"</span>, <span class="st">"ground"</span>, <span class="st">"steel"</span>, <span class="st">"flying"</span>))</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>type_2 <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>type_2, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"normal"</span>, <span class="st">"fighting"</span>, <span class="st">"bug"</span>, <span class="st">"poison"</span>, <span class="st">"dark"</span>, <span class="st">"grass"</span>, <span class="st">"ghost"</span>, <span class="st">"psychic"</span>, <span class="st">"fairy"</span>, <span class="st">"dragon"</span>, <span class="st">"water"</span>, <span class="st">"ice"</span>, <span class="st">"fire"</span>, <span class="st">"electric"</span>, <span class="st">"rock"</span>, <span class="st">"ground"</span>, <span class="st">"steel"</span>, <span class="st">"flying"</span>, <span class="st">"none"</span>))</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>pokemon_evo<span class="sc">$</span>evo_stage <span class="ot">&lt;-</span> <span class="fu">factor</span>(pokemon_evo<span class="sc">$</span>evo_stage, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"11"</span>, <span class="st">"12"</span>, <span class="st">"22"</span>, <span class="st">"13"</span>, <span class="st">"23"</span>, <span class="st">"33"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>pokemon_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(pokemon_evo, <span class="at">prop =</span> <span class="fl">0.8</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">strata =</span> type_1)</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>pokemon_train <span class="ot">&lt;-</span> <span class="fu">training</span>(pokemon_split)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>pokemon_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(pokemon_split)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pokemon_split <span class="ot">&lt;-</span> <span class="fu">initial_split</span>(pokemon_evo, <span class="at">prop =</span> <span class="fl">0.8</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                                <span class="at">strata =</span> type_1)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>pokemon_train <span class="ot">&lt;-</span> <span class="fu">training</span>(pokemon_split)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>pokemon_test <span class="ot">&lt;-</span> <span class="fu">testing</span>(pokemon_split)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </section>
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
-<p>This section should include the code, figures, and accompanying text for the exploratory data analysis that is relevant to your objective. You should be able to just clean up the EDA section from Project 2.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> height, <span class="co"># Numerical</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color =</span> evo_stage) <span class="co"># color just the points</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="math-437-project_files/figure-html/height vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Looking at these box plots, we can see that for the most part there is a distinct difference in the inter quartile range (IQR) of each <code>evo_stage</code>. Although this is the case, it looks like Pokemon that have no evolution have a much more broad IQR, meaning that there is much more variability inside that group.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> height, <span class="co"># Numerical</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> weight, <span class="co"># Numerical</span></span>
 <span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -316,17 +307,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/height vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/weight vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>The box plots for weight have the same distinctness but also that same issue of the IQR being too broad for Pokemon that have no evolution.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> weight, <span class="co"># Numerical</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> base_experience, <span class="co"># Numerical</span></span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -337,17 +329,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/weight vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/base_experience vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
+<p>It looks like <code>base_experience</code> by <code>evo_stage</code> has the smallest IQR for each <code>evo_stage</code> except for the Pokemon that have no evolution (<code>11</code>). This means that although these Pokemon give higher base experience on average, there is a lot more variability within the group.</p>
+<p>The rest of these plots look at the stats of a Pokemon by ’evo_stage<code>. They all have that same pattern of</code>evo_stage` 12 and 13 being the lowest, followed by 23, then by 22, then lastly 33. In all of these, 11 is more comparable to 33 but usually with much more variability.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> base_experience, <span class="co"># Numerical</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> hp, <span class="co"># Numerical</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -358,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/base_experience vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/hp vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -368,7 +362,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> hp, <span class="co"># Numerical</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> attack, <span class="co"># Numerical</span></span>
 <span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -379,7 +373,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/hp vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/attack vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -389,7 +383,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> attack, <span class="co"># Numerical</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> defense, <span class="co"># Numerical</span></span>
 <span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -400,7 +394,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/attack vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/defense vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -410,7 +404,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> defense, <span class="co"># Numerical</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> special_attack, <span class="co"># Numerical</span></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -421,7 +415,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/defense vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/special_attack vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -431,7 +425,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> special_attack, <span class="co"># Numerical</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> special_defense, <span class="co"># Numerical</span></span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -442,7 +436,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/special_attack vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="math-437-project_files/figure-html/special_defense vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -452,7 +446,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
 <span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> special_defense, <span class="co"># Numerical</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> speed, <span class="co"># Numerical</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
@@ -463,48 +457,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="math-437-project_files/figure-html/special_defense vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> evo_stage, <span class="co"># Categorical</span></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> speed, <span class="co"># Numerical</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> evo_stage <span class="co"># colors the boxplots different colors</span></span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">color =</span> evo_stage) <span class="co"># color just the points</span></span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
 <p><img src="math-437-project_files/figure-html/speed vs evo_stage boxplots-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span> pokemon_train,</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> base_experience</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">center =</span> <span class="dv">125</span>, <span class="co"># center of one bin</span></span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">binwidth =</span> <span class="dv">10</span> <span class="co"># bin width</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># one bin from 100-150</span></span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Base Experience"</span>,</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Pokemon"</span>,</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">data=</span> pokemon_train,</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> base_experience</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">center =</span> <span class="dv">125</span>, <span class="co"># center of one bin</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">binwidth =</span> <span class="dv">10</span> <span class="co"># bin width</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># one bin from 100-150</span></span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Base Experience"</span>,</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Pokemon"</span>,</span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -513,61 +486,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>When we first looked at the <code>base_experience</code> of each <code>evo_stage</code>, I was worried that the distribution for <code>base_experience</code> it might not have a singular peak. If it has more than one peak, that would affect the clustering/grouping I was going to do. Looking at the histogram, we can see that there are actually three distinct peaks in <code>base_experiecne</code>, which means that this variable is trimodal.</p>
 </section>
 <section id="modeling" class="level2">
 <h2 class="anchored" data-anchor-id="modeling">Modeling</h2>
 <p>Here I will use the K-means clustering algorithm to define my clusters, which are groups of data points that have non-overlapping observations. The algorithm is as follows: 1. Assign all observations to a random cluster, the amount of clusters we want is user defined. 2. Find the center of each cluster by calculating the Euclidean distance (the square root of the sum of squared differences between their coordinates) of each pair of observations in the same cluster. 3. Assign each observation to the closest cluster center of the cluster centers found in step 2. 4. Repeat steps 2 and 3 until the cluster assignments stop changing. Once all of that is completed, we will have our clusters. Since this process is dependent on the initial random cluster assignments, we will be doing 20 random initial assignments.</p>
+<p>Since we saw that <code>base_experience</code> is trimodal, I had to use the <code>step_BoxCox()</code> function to make our variable have more of a normal distribution (has one peak) as to not affect the performance of the K-means Clustering algorithm. The predictor variables that I have chosen for determining these clusters are <code>base_experience</code>, <code>hp</code>, <code>attack</code>, <code>defense</code>, <code>special_attack</code>, <code>special_defense</code>, and <code>speed</code>. The reason I did not choose to have <code>height</code> and <code>weight</code> is because when looking at the box plots for them earlier, there wasn’t enough distinctness between different evolution stages. When coupled with the increased variability of Pokemon who have no evolution, I am worried that those Pokemon might end up in the wrong groups.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>kmeans_model <span class="ot">&lt;-</span> <span class="fu">k_means</span>(<span class="at">num_clusters =</span> <span class="fu">tune</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_args</span>(<span class="at">nstart =</span> <span class="dv">20</span>) <span class="co"># run from 20 random initial assignments</span></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>kmeans_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> base_experience <span class="sc">+</span> attack <span class="sc">+</span> defense <span class="sc">+</span> special_attack <span class="sc">+</span> special_defense <span class="sc">+</span> speed, </span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> pokemon_train) <span class="sc">|&gt;</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_BoxCox</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>kmeans_wflow <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(kmeans_model) <span class="sc">|&gt;</span></span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(kmeans_recipe)</span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a><span class="co">#height + weight + base_experience + hp + attack + defense + special_attack + special_defense + speed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>kmeans_model <span class="ot">&lt;-</span> <span class="fu">k_means</span>(<span class="at">num_clusters =</span> <span class="fu">tune</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_args</span>(<span class="at">nstart =</span> <span class="dv">20</span>) <span class="co"># run from 20 random initial assignments</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>kmeans_recipe <span class="ot">&lt;-</span> <span class="fu">recipe</span>(<span class="sc">~</span> base_experience <span class="sc">+</span> attack <span class="sc">+</span> defense <span class="sc">+</span> special_attack <span class="sc">+</span> special_defense <span class="sc">+</span> speed, </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">data =</span> pokemon_train) <span class="sc">|&gt;</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_BoxCox</span>(<span class="fu">all_numeric_predictors</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">step_normalize</span>(<span class="fu">all_numeric_predictors</span>())</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>kmeans_wflow <span class="ot">&lt;-</span> <span class="fu">workflow</span>() <span class="sc">|&gt;</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_model</span>(kmeans_model) <span class="sc">|&gt;</span></span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_recipe</span>(kmeans_recipe)</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co">#height + weight + base_experience + hp + attack + defense + special_attack + special_defense + speed</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>K-fold Cross Validation splits our training data into k-folds (e.g.&nbsp;groups), leaves one fold out, and calculates the mean squared error (MSE) of the remaining k-1 folds. This process can be repeated any number of times. For the sake of saving time, I will be doing 3 repeats with 5 folds. Cross-validation allows us to get a sense of the variability of the total WSS (within-cluster sum of squares) at each number of clusters.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>kmeans_kfold <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">v =</span> <span class="dv">5</span>, <span class="at">repeats =</span> <span class="dv">3</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">3</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>kmeans_kfold <span class="ot">&lt;-</span> <span class="fu">vfold_cv</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> pokemon_train,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">v =</span> <span class="dv">5</span>, <span class="at">repeats =</span> <span class="dv">3</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>nclusters_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">num_clusters =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">by =</span> <span class="dv">1</span>)</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>kmeans_tuned <span class="ot">&lt;-</span> <span class="fu">tune_cluster</span>(</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  kmeans_wflow,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> kmeans_kfold,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">cluster_metric_set</span>(</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    sse_total, <span class="co"># should be same total SSE for all values of K</span></span>
-<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    sse_within_total, <span class="co"># should decrease as K increases</span></span>
-<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    sse_ratio <span class="co"># sse_within_total/sse_total</span></span>
-<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>nclusters_grid <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">num_clusters =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">10</span>), <span class="at">by =</span> <span class="dv">1</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>kmeans_tuned <span class="ot">&lt;-</span> <span class="fu">tune_cluster</span>(</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  kmeans_wflow,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">resamples =</span> kmeans_kfold,</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">metrics =</span> <span class="fu">cluster_metric_set</span>(</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    sse_total, <span class="co"># should be same total SSE for all values of K</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    sse_within_total, <span class="co"># should decrease as K increases</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    sse_ratio <span class="co"># sse_within_total/sse_total</span></span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>tuned_metrics <span class="ot">&lt;-</span> <span class="fu">collect_metrics</span>(kmeans_tuned)</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>tuned_metrics <span class="sc">|&gt;</span></span>
-<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"sse_ratio"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
-<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> num_clusters, <span class="at">y =</span> mean)</span>
-<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
-<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
-<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Scree Plot"</span>,</span>
-<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Number of Clusters"</span>,</span>
-<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean WSS/TSS (5 fold)"</span></span>
-<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>tuned_metrics <span class="ot">&lt;-</span> <span class="fu">collect_metrics</span>(kmeans_tuned)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>tuned_metrics <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(.metric <span class="sc">==</span> <span class="st">"sse_ratio"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> num_clusters, <span class="at">y =</span> mean)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Scree Plot"</span>,</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Number of Clusters"</span>,</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Mean WSS/TSS (5 fold)"</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -576,28 +551,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>I will be choosing 3 clusters since I want to group Pokemon by unevolved, evolved, and has no evolution. The point for 2 clusters is missing because the model could not converge on 2 clusters in any of its iterations.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>kmeans_4clusters <span class="ot">&lt;-</span> kmeans_wflow <span class="sc">|&gt;</span></span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow_tidyclust</span>(</span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> <span class="fu">list</span>(<span class="at">num_clusters =</span> <span class="dv">3</span>)</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>kmeans_fit<span class="ot">&lt;-</span> kmeans_4clusters <span class="sc">|&gt;</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> pokemon_train)</span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  pokemon_train,</span>
-<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>  kmeans_fit <span class="sc">|&gt;</span> <span class="fu">extract_cluster_assignment</span>() <span class="co"># gets clusters</span></span>
-<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>( <span class="co"># ggplot version of a scatterplot matrix</span></span>
-<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  cluster_assignments,</span>
-<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"base_experience"</span> ,<span class="st">"hp"</span>, <span class="st">"attack"</span>, <span class="st">"defense"</span>, <span class="st">"special_attack"</span>, <span class="st">"special_defense"</span>, <span class="st">"speed"</span>), <span class="co"># columns to plot</span></span>
-<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>), <span class="co"># scatterolots in lower triangular matrix</span></span>
-<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>), <span class="co"># scatterplots in upper triangular matrix</span></span>
-<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">color =</span> .cluster)</span>
-<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>kmeans_4clusters <span class="ot">&lt;-</span> kmeans_wflow <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">finalize_workflow_tidyclust</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">parameters =</span> <span class="fu">list</span>(<span class="at">num_clusters =</span> <span class="dv">3</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">4</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>kmeans_fit<span class="ot">&lt;-</span> kmeans_4clusters <span class="sc">|&gt;</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fit</span>(<span class="at">data =</span> pokemon_train)</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  pokemon_train,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  kmeans_fit <span class="sc">|&gt;</span> <span class="fu">extract_cluster_assignment</span>() <span class="co"># gets clusters</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>( <span class="co"># ggplot version of a scatterplot matrix</span></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a>  cluster_assignments,</span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">columns =</span> <span class="fu">c</span>(<span class="st">"base_experience"</span> ,<span class="st">"hp"</span>, <span class="st">"attack"</span>, <span class="st">"defense"</span>, <span class="st">"special_attack"</span>, <span class="st">"special_defense"</span>, <span class="st">"speed"</span>), <span class="co"># columns to plot</span></span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">lower =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>), <span class="co"># scatterolots in lower triangular matrix</span></span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">upper =</span> <span class="fu">list</span>(<span class="at">continuous =</span> <span class="st">"points"</span>), <span class="co"># scatterplots in upper triangular matrix</span></span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(<span class="at">color =</span> .cluster)</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -606,65 +582,63 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
+<p>Looking at these scatterplots, the clusters are pretty distinct with some overlapping in some of the plots.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pokemon, evo_stage, base_experience, hp, attack, defense, special_attack, special_defense, speed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 178 × 15
-   pokemon    evo_stage height weight base_experience type_1 type_2    hp attack
-   &lt;chr&gt;      &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt;
- 1 ivysaur    23           1     13               142 grass  poison    60     62
- 2 wigglytuff 33           1     12               196 normal fairy    140     70
- 3 machamp    33           1.6  130               227 fight… &lt;NA&gt;      90    130
- 4 farfetchd  12           0.8   15               132 normal flying    52     90
- 5 pinsir     11           1.5   55               175 bug    &lt;NA&gt;      65    125
- 6 omastar    22           1     35               173 rock   water     70     60
- 7 kabutops   22           1.3   40.5             173 rock   water     60    115
- 8 snorlax    22           2.1  460               189 normal &lt;NA&gt;     160    110
- 9 bayleef    23           1.2   15.8             142 grass  &lt;NA&gt;      60     62
-10 ariados    22           1.1   33.5             140 bug    poison    70     90
+<pre><code># A tibble: 178 × 9
+   pokemon    evo_stage base_experience    hp attack defense special_attack
+   &lt;chr&gt;      &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 ivysaur    23                    142    60     62      63             80
+ 2 wigglytuff 33                    196   140     70      45             85
+ 3 machamp    33                    227    90    130      80             65
+ 4 farfetchd  12                    132    52     90      55             58
+ 5 pinsir     11                    175    65    125     100             55
+ 6 omastar    22                    173    70     60     125            115
+ 7 kabutops   22                    173    60    115     105             65
+ 8 snorlax    22                    189   160    110      65             65
+ 9 bayleef    23                    142    60     62      80             63
+10 ariados    22                    140    70     90      70             60
 # ℹ 168 more rows
-# ℹ 6 more variables: defense &lt;dbl&gt;, special_attack &lt;dbl&gt;,
-#   special_defense &lt;dbl&gt;, speed &lt;dbl&gt;, generation_id &lt;dbl&gt;, .cluster &lt;fct&gt;</code></pre>
+# ℹ 2 more variables: special_defense &lt;dbl&gt;, speed &lt;dbl&gt;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pokemon, evo_stage, base_experience, hp, attack, defense, special_attack, special_defense, speed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 233 × 15
-   pokemon    evo_stage height weight base_experience type_1 type_2    hp attack
-   &lt;chr&gt;      &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;fct&gt;  &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt;
- 1 charmander 13           0.6    8.5              62 fire   &lt;NA&gt;      39     52
- 2 pidgey     13           0.3    1.8              50 normal flying    40     45
- 3 pidgeotto  23           1.1   30               122 normal flying    63     60
- 4 rattata    12           0.3    3.5              51 normal &lt;NA&gt;      30     56
- 5 spearow    12           0.3    2                52 normal flying    40     60
- 6 pikachu    23           0.4    6               112 elect… &lt;NA&gt;      35     55
- 7 nidoran-f  13           0.4    7                55 poison &lt;NA&gt;      55     47
- 8 nidorina   23           0.8   20               128 poison &lt;NA&gt;      70     62
- 9 jigglypuff 23           0.5    5.5              95 normal fairy    115     45
-10 zubat      13           0.8    7.5              49 poison flying    40     45
+<pre><code># A tibble: 233 × 9
+   pokemon    evo_stage base_experience    hp attack defense special_attack
+   &lt;chr&gt;      &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 charmander 13                     62    39     52      43             60
+ 2 pidgey     13                     50    40     45      40             35
+ 3 pidgeotto  23                    122    63     60      55             50
+ 4 rattata    12                     51    30     56      35             25
+ 5 spearow    12                     52    40     60      30             31
+ 6 pikachu    23                    112    35     55      40             50
+ 7 nidoran-f  13                     55    55     47      52             40
+ 8 nidorina   23                    128    70     62      67             55
+ 9 jigglypuff 23                     95   115     45      20             45
+10 zubat      13                     49    40     45      35             30
 # ℹ 223 more rows
-# ℹ 6 more variables: defense &lt;dbl&gt;, special_attack &lt;dbl&gt;,
-#   special_defense &lt;dbl&gt;, speed &lt;dbl&gt;, generation_id &lt;dbl&gt;, .cluster &lt;fct&gt;</code></pre>
+# ℹ 2 more variables: special_defense &lt;dbl&gt;, speed &lt;dbl&gt;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pokemon, evo_stage, base_experience, hp, attack, defense, special_attack, special_defense, speed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 230 × 15
-   pokemon   evo_stage height weight base_experience type_1  type_2    hp attack
-   &lt;chr&gt;     &lt;fct&gt;      &lt;dbl&gt;  &lt;dbl&gt;           &lt;dbl&gt; &lt;fct&gt;   &lt;fct&gt;  &lt;dbl&gt;  &lt;dbl&gt;
- 1 charizard 33           1.7   90.5             240 fire    flying    78     84
- 2 beedrill  33           1     29.5             178 bug     poison    65     90
- 3 pidgeot   33           1.5   39.5             216 normal  flying    83     80
- 4 fearow    22           1.2   38               155 normal  flying    65     90
- 5 raichu    33           0.8   30               218 electr… &lt;NA&gt;      60     90
- 6 nidoqueen 33           1.3   60               227 poison  ground    90     92
- 7 nidoking  33           1.4   62               227 poison  ground    81    102
- 8 golbat    23           1.6   55               159 poison  flying    75     80
- 9 venomoth  22           1.5   12.5             158 bug     poison    70     65
-10 persian   22           1     32               154 normal  &lt;NA&gt;      65     70
+<pre><code># A tibble: 230 × 9
+   pokemon   evo_stage base_experience    hp attack defense special_attack
+   &lt;chr&gt;     &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 charizard 33                    240    78     84      78            109
+ 2 beedrill  33                    178    65     90      40             45
+ 3 pidgeot   33                    216    83     80      75             70
+ 4 fearow    22                    155    65     90      65             61
+ 5 raichu    33                    218    60     90      55             90
+ 6 nidoqueen 33                    227    90     92      87             75
+ 7 nidoking  33                    227    81    102      77             85
+ 8 golbat    23                    159    75     80      70             65
+ 9 venomoth  22                    158    70     65      60             90
+10 persian   22                    154    65     70      60             65
 # ℹ 220 more rows
-# ℹ 6 more variables: defense &lt;dbl&gt;, special_attack &lt;dbl&gt;,
-#   special_defense &lt;dbl&gt;, speed &lt;dbl&gt;, generation_id &lt;dbl&gt;, .cluster &lt;fct&gt;</code></pre>
+# ℹ 2 more variables: special_defense &lt;dbl&gt;, speed &lt;dbl&gt;</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_1"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 2
   evo_stage     n
@@ -675,7 +649,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 4 33           23
 5 12            8</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 2
   evo_stage     n
@@ -686,7 +660,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 4 11            7
 5 22            2</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>) <span class="sc">%&gt;%</span> <span class="fu">count</span>(evo_stage, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 2
   evo_stage     n
@@ -698,20 +672,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 5 12            6</code></pre>
 </div>
 </div>
+<p>Looking at this, we can see that <code>Cluster_2</code> (Green) is mostly comprised of unevolved Pokemon, with some Pokemon being at their second of three evolutions, some at their second of two evolutions and some with no evolutions. <code>Cluster_3</code> is mostly comprised of Pokemon who are at third of three evolutions, second of two evolutions, and Pokemon with no evolutions. These cluster aren’t what I was expecting, so let’s take a look at the Pokemon who cannot evolve and see why they ended up spread out across the 3 clusters.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_2"</span>, evo_stage <span class="sc">==</span> <span class="st">"11"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pokemon, evo_stage, base_experience, hp, attack, defense, special_attack, special_defense, speed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 7 × 9
+  pokemon         evo_stage base_experience    hp attack defense special_attack
+  &lt;chr&gt;           &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+1 ditto           11                    101    48     48      48             48
+2 smeargle        11                     88    55     20      35             20
+3 spinda          11                    126    60     60      60             60
+4 unown           11                    118    48     72      48             72
+5 delibird        11                    116    45     55      45             65
+6 luvdisc         11                    116    43     30      55             40
+7 wishiwashi-solo 11                     61    45     20      20             25
+# ℹ 2 more variables: special_defense &lt;dbl&gt;, speed &lt;dbl&gt;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>cluster_assignments <span class="sc">|&gt;</span> <span class="fu">filter</span>(.cluster <span class="sc">==</span> <span class="st">"Cluster_3"</span>, evo_stage <span class="sc">==</span> <span class="st">"11"</span>) <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(pokemon, evo_stage, base_experience, hp, attack, defense, special_attack, special_defense, speed)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 69 × 9
+   pokemon    evo_stage base_experience    hp attack defense special_attack
+   &lt;chr&gt;      &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;          &lt;dbl&gt;
+ 1 kangaskhan 11                    172   105     95      80             40
+ 2 tauros     11                    172    75    100      95             40
+ 3 articuno   11                    261    90     85     100             95
+ 4 lugia      11                    306   106     90     130             90
+ 5 ho-oh      11                    306   106    130      90            110
+ 6 celebi     11                    270   100    100     100            100
+ 7 minun      11                    142    60     40      50             75
+ 8 seviper    11                    160    73    100      60            100
+ 9 castform   11                    147    70     70      70             70
+10 latias     11                    270    80     80      90            110
+# ℹ 59 more rows
+# ℹ 2 more variables: special_defense &lt;dbl&gt;, speed &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>It looks like Pokemon that have no evolution in the second cluster have very low stats across the board, except for <code>base_experience</code> which is relatively higher than the other Pokemon in that same cluster. In the third cluster, we can see that Pokemon that have no evolution have very high stats with <code>base_experience</code> that reflects that fact.</p>
 </section>
-<section id="insightsconclusion" class="level2">
-<h2 class="anchored" data-anchor-id="insightsconclusion">Insights/Conclusion</h2>
-<p>Pick either “Insights” or “Conclusion” as the section title depending on what makes more sense.</p>
-<p>Describe the primary findings from your EDA and modeling sections as appropriate to the main question/objective. You can reproduce the figure from your summary if that helps.</p>
+<section id="insights" class="level2">
+<h2 class="anchored" data-anchor-id="insights">Insights</h2>
+<p>Although I expected to see 3 clusters that were comprised of Pokemon that are unevolved, are evolved, and have no evolution respectively, I instead saw groups of Pokemon with low stats, average stats, and high stats.</p>
 <section id="limitations-and-future-work" class="level3">
 <h3 class="anchored" data-anchor-id="limitations-and-future-work">Limitations and Future Work</h3>
-<p>This section should include further exploration of the limitations of your modeling approach. Some avenues of exploration include:</p>
-<ul>
-<li>Who/what is being poorly predicted by your model? Why?</li>
-<li>How might someone improve the data collection or analysis in the future?</li>
-<li>Are the assumptions behind your analytical methods justified?</li>
-<li>Are there ethical concerns about how the data was collected or how the results of the analysis could be used in the real world?</li>
-</ul>
+<p>Clustering based on the three cases I previously specified didn’t turn out like I wanted. This is because my assumption that Pokemon who gave higher <code>base_experience</code> had higher stats was false. When looking at the cluster assignments, Pokemon that gave relatively high <code>base_experience</code> didn’t always have higher stats. As a result, my clustering didn’t end up as expected. In retrospect, I should have seen this coming when looking at the box plots, the high variability within the Pokemon that have no evolution was way too high to assume that those Pokemon had higher stats.</p>
 
 
 </section>
